@@ -9,7 +9,7 @@ import com.velocitypowered.api.command.CommandSource;
  *
  * @param <T> the type of the arguments
  */
-abstract class AbstractCommandInvocation<T> implements CommandInvocation<T> {
+public abstract class AbstractCommandInvocation<T> implements CommandInvocation<T> {
 
   private final CommandSource source;
   private final T arguments;
