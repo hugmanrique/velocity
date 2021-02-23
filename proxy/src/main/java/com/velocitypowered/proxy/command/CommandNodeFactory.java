@@ -21,12 +21,10 @@ import java.util.Map;
 
 interface CommandNodeFactory<T extends Command> {
 
-  InvocableCommandNodeFactory<SimpleCommand.Invocation, String[]> SIMPLE =
-          new InvocableCommandNodeFactory<>(
+  CommandNodeFactory<SimpleCommand> SIMPLE = new InvocableCommandNodeFactory<>(
                   SimpleCommandInvocation.FACTORY, StringArrayArgumentType.INSTANCE);
 
-  InvocableCommandNodeFactory<RawCommand.Invocation, String> RAW =
-          new InvocableCommandNodeFactory<>(
+  CommandNodeFactory<RawCommand> RAW = new InvocableCommandNodeFactory<>(
                   RawCommandInvocation.FACTORY, StringArgumentType.greedyString());
 
   LegacyCommandNodeFactory LEGACY = new LegacyCommandNodeFactory();
@@ -48,8 +46,6 @@ interface CommandNodeFactory<T extends Command> {
   }
    */
 
-  String ARGS_NODE_NAME = "arguments";
-
   static String readAlias(final CommandContext<?> context) {
     if (!context.hasNodes()) {
       throw new IllegalArgumentException("Context root node has no children");
@@ -63,6 +59,8 @@ interface CommandNodeFactory<T extends Command> {
     }
     return parse.getContext().getNodes().get(0).getNode().getName();
   }
+
+  String ARGS_NODE_NAME = "arguments";
 
   static <V> V readArguments(final CommandContext<CommandSource> context, final Class<V> type,
                              final V fallback) {
@@ -100,8 +98,9 @@ interface CommandNodeFactory<T extends Command> {
 
   LiteralCommandNode<CommandSource> create(final T command, final String alias);
 
-  class InvocableCommandNodeFactory<I extends CommandInvocation<A>, A>
-          implements CommandNodeFactory<InvocableCommand<I>> {
+  class InvocableCommandNodeFactory
+          <T extends InvocableCommand<I>, I extends CommandInvocation<A>, A>
+          implements CommandNodeFactory<T> {
 
     private final CommandInvocationFactory<I> invocationFactory;
     private final ArgumentType<A> argumentsType;
@@ -113,8 +112,7 @@ interface CommandNodeFactory<T extends Command> {
     }
 
     @Override
-    public LiteralCommandNode<CommandSource> create(final InvocableCommand<I> command,
-                                                    final String alias) {
+    public LiteralCommandNode<CommandSource> create(final T command, final String alias) {
       Preconditions.checkNotNull(command, "command");
       final LiteralCommandNode<CommandSource> node = LiteralArgumentBuilder
               .<CommandSource>literal(alias.toLowerCase(Locale.ENGLISH))
