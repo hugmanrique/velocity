@@ -33,7 +33,7 @@ import org.junit.jupiter.api.Test;
 
 public class CommandManagerTests {
 
-  private static final VelocityEventManager EVENT_MANAGER = new MockEventManager();
+  static final VelocityEventManager EVENT_MANAGER = new MockEventManager();
 
   static {
     Runtime.getRuntime().addShutdownHook(new Thread(() -> {
